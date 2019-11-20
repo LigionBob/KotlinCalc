@@ -7,10 +7,13 @@ import java.lang.NumberFormatException
 
 class MainView : View() {
     private var numberView = TextField()
-    private var numbers1 : String = ""
-    private var numbers2 : String = String()
-    private var isNumbers1Full : Boolean = false
-    private var isNumbers2Full : Boolean = false
+    private var numberString1 : String = ""
+    private var numberDouble1 : Double = 0.0
+    private var numberString2 : String = ""
+    private var numberDouble2 : Double = 0.0
+    private var numberOut : Double = 0.0
+    private var operator : OPERATOR = OPERATOR.UNDEFINED
+    private var currentNumberString : Int = 0
 
     override val root = vbox {
 
@@ -46,6 +49,12 @@ class MainView : View() {
                 text = "9"
                 action {
                     appendNum("9")
+                }
+            }
+            button {
+                text = "+"
+                action {
+                    operatorPressed(OPERATOR.ADD)
                 }
             }
         }
@@ -102,9 +111,36 @@ class MainView : View() {
     }
     private fun appendNum(number: String) {
         println(number)
-        numbers1 += number
-        numberView.text = numbers1
-        println(numbers1)
+        if(currentNumberString == 0) {
+            numberString1 += number
+            numberView.text = numberString1
+            println(numberString1)
+        }
+        if(currentNumberString == 1) {
+            numberString2 += number
+            numberView.text = numberString2
+            println(numberString2)
+        }
+    }
+    private fun operatorPressed(operator : OPERATOR) {
+        this.operator = operator
+        if(currentNumberString == 1) {
+            try {
+                numberDouble1 = numberString1.toDouble()
+                numberDouble2 = numberString1.toDouble()
+            } catch (nfe : NumberFormatException) {
+                nfe.printStackTrace()
+            }
+            when (operator) {
+                OPERATOR.ADD -> numberDouble1 + numberDouble2
+                OPERATOR.SUBTRACT -> numberDouble1 - numberDouble2
+                OPERATOR.DIVIDE -> numberDouble1 / numberDouble2
+                OPERATOR.MULTIPLY -> numberDouble1 * numberDouble2
+                else -> println("Undefined Number Operator")
+            }
+        } else {
+            currentNumberString = 1
+        }
     }
 }
 class Main : App(MainView::class)
