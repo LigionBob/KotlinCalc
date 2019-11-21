@@ -14,6 +14,7 @@ class MainView : View() {
     private var numberOut : Double = 0.0
     private var operator : OPERATOR = OPERATOR.UNDEFINED
     private var currentNumberString : Int = 0
+    private var wasOperatorLastPressed : Boolean = false;
 
     override val root = vbox {
 
@@ -37,24 +38,28 @@ class MainView : View() {
                 text = "7"
                 action {
                     appendNum("7")
+                    wasOperatorLastPressed = false
                 }
             }
             button {
                 text = "8"
                 action {
                     appendNum("8")
+                    wasOperatorLastPressed = false
                 }
             }
             button {
                 text = "9"
                 action {
                     appendNum("9")
+                    wasOperatorLastPressed = false
                 }
             }
             button {
                 text = "+"
                 action {
                     operatorPressed(OPERATOR.ADD)
+                    wasOperatorLastPressed = true
                 }
             }
         }
@@ -65,18 +70,28 @@ class MainView : View() {
                 text = "4"
                 action {
                     appendNum("4")
+                    wasOperatorLastPressed = false
                 }
             }
             button {
                 text = "5"
                 action {
                     appendNum("5")
+                    wasOperatorLastPressed = false
                 }
             }
             button {
                 text = "6"
                 action {
                     appendNum("6")
+                    wasOperatorLastPressed = false
+                }
+            }
+            button {
+                text = "-"
+                action {
+                    operatorPressed(OPERATOR.SUBTRACT)
+                    wasOperatorLastPressed = true
                 }
             }
         }
@@ -87,60 +102,112 @@ class MainView : View() {
                 text = "1"
                 action {
                     appendNum("1")
+                    wasOperatorLastPressed = false
                 }
             }
             button {
                 text = "2"
                 action {
                     appendNum("2")
+                    wasOperatorLastPressed = false
                 }
             }
             button {
                 text = "3"
                 action {
                     appendNum("3")
+                    wasOperatorLastPressed = false
+                }
+            }
+            button {
+                text = "*"
+                action {
+                    operatorPressed(OPERATOR.MULTIPLY)
+                    wasOperatorLastPressed = true
                 }
             }
         }
-        button {
-            text = "0"
-            action {
-                appendNum("0")
+        hbox {
+            alignment = Pos.CENTER
+            spacing = 5.0
+
+            button {
+                text = " "
+            }
+            button {
+                text = "0"
+                action {
+                    appendNum("0")
+                    wasOperatorLastPressed = false
+                }
+            }
+            button {
+                text = " "
+            }
+            button {
+                text = "/"
+                action {
+                    operatorPressed(OPERATOR.DIVIDE)
+                    wasOperatorLastPressed = true
+                }
             }
         }
     }
     private fun appendNum(number: String) {
-        println(number)
+        if(wasOperatorLastPressed) currentNumberString = 0
         if(currentNumberString == 0) {
             numberString1 += number
             numberView.text = numberString1
-            println(numberString1)
+            println("$numberString1 = num1")
         }
         if(currentNumberString == 1) {
             numberString2 += number
             numberView.text = numberString2
-            println(numberString2)
+            println("$numberString2 = num2")
         }
     }
     private fun operatorPressed(operator : OPERATOR) {
-        this.operator = operator
+        if(this.operator == OPERATOR.UNDEFINED) this.operator = operator
         if(currentNumberString == 1) {
             try {
                 numberDouble1 = numberString1.toDouble()
-                numberDouble2 = numberString1.toDouble()
+                numberDouble2 = numberString2.toDouble()
+                println("$numberDouble1 num1; $numberDouble2 num2;" )
             } catch (nfe : NumberFormatException) {
                 nfe.printStackTrace()
             }
             when (operator) {
-                OPERATOR.ADD -> numberDouble1 + numberDouble2
-                OPERATOR.SUBTRACT -> numberDouble1 - numberDouble2
-                OPERATOR.DIVIDE -> numberDouble1 / numberDouble2
-                OPERATOR.MULTIPLY -> numberDouble1 * numberDouble2
+                OPERATOR.ADD -> {
+                    numberOut = numberDouble1 + numberDouble2
+                    numberView.text = numberOut.toString()
+                    numberString1 = numberOut.toString()
+                    numberString2 = ""
+                }
+                OPERATOR.SUBTRACT -> {
+                    numberOut = numberDouble1 - numberDouble2
+                    numberView.text = numberOut.toString()
+                    numberString1 = numberOut.toString()
+                    numberString2 = ""
+                }
+                OPERATOR.DIVIDE -> {
+                    numberOut = numberDouble1 / numberDouble2
+                    numberView.text = numberOut.toString()
+                    numberString1 = numberOut.toString()
+                    numberString2 = ""
+                }
+                OPERATOR.MULTIPLY -> {
+                    numberOut = numberDouble1 * numberDouble2
+                    numberView.text = numberOut.toString()
+                    numberString1 = numberOut.toString()
+                    numberString2 = ""
+                }
                 else -> println("Undefined Number Operator")
             }
+            println(numberOut)
         } else {
             currentNumberString = 1
         }
+        this.operator = operator
     }
 }
 class Main : App(MainView::class)
